@@ -1,7 +1,6 @@
 # 💹 FinanceOS — Full-Stack Finance Dashboard
 
 > A premium, production-grade personal finance dashboard built with **React + Node.js/Express + MySQL**.  
-> Frontend Intern Assignment submission — covers all core requirements + optional enhancements.
 
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)
 ![Node.js](https://img.shields.io/badge/Node.js-20-339933?style=flat-square&logo=nodedotjs)
@@ -309,4 +308,3 @@ Switch via the dropdown in the top-right navbar.
 
 ---
 
-*Built for the **Frontend Developer Intern — Finance Dashboard UI** assignment.*
