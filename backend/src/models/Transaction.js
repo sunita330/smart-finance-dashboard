@@ -107,18 +107,25 @@ const TransactionModel = {
 
   /** Monthly summary — income, expenses, balance */
   async summary({ year, month }) {
-    const [rows] = await db.execute(
-      `SELECT
-         COALESCE(SUM(CASE WHEN type='income'  THEN amount ELSE 0 END), 0) AS total_income,
-         COALESCE(SUM(CASE WHEN type='expense' THEN amount ELSE 0 END), 0) AS total_expenses,
-         COALESCE(SUM(CASE WHEN type='income'  THEN amount ELSE -amount END), 0) AS balance,
-         COUNT(*) AS transaction_count
-       FROM transactions
-       WHERE YEAR(txn_date) = ? AND MONTH(txn_date) = ?`,
-      [parseInt(year), parseInt(month)]
-    );
-    return rows[0];
-  },
+  let sql = `
+    SELECT
+      COALESCE(SUM(CASE WHEN type='income'  THEN amount ELSE 0 END), 0) AS total_income,
+      COALESCE(SUM(CASE WHEN type='expense' THEN amount ELSE 0 END), 0) AS total_expenses,
+      COALESCE(SUM(CASE WHEN type='income'  THEN amount ELSE -amount END), 0) AS balance,
+      COUNT(*) AS transaction_count
+    FROM transactions
+  `;
+
+  const params = [];
+
+  if (year && month) {
+    sql += " WHERE YEAR(txn_date) = ? AND MONTH(txn_date) = ?";
+    params.push(parseInt(year), parseInt(month));
+  }
+
+  const [rows] = await db.execute(sql, params);
+  return rows[0];
+},
 
   /** N-month trend */
   async monthlyTrend(months = 6) {
@@ -138,23 +145,32 @@ const TransactionModel = {
 
   /** Spending breakdown by category for a given month */
   async categoryBreakdown({ year, month }) {
-    const [rows] = await db.execute(
-      `SELECT
-         c.id, c.name, c.icon, c.color,
-         COALESCE(SUM(t.amount), 0) AS total,
-         COUNT(t.id) AS count
-       FROM categories c
-       LEFT JOIN transactions t
-         ON t.category_id = c.id
-         AND t.type = 'expense'
-         AND YEAR(t.txn_date) = ?
-         AND MONTH(t.txn_date) = ?
-       GROUP BY c.id
-       HAVING total > 0
-       ORDER BY total DESC`,
-      [parseInt(year), parseInt(month)]
-    );
-    return rows;
+    let sql = `
+    SELECT
+      c.id, c.name, c.icon, c.color,
+      COALESCE(SUM(t.amount), 0) AS total,
+      COUNT(t.id) AS count
+    FROM categories c
+    LEFT JOIN transactions t
+      ON t.category_id = c.id
+      AND t.type = 'expense'
+  `;
+
+  const params = [];
+
+  if (year && month) {
+    sql += " AND YEAR(t.txn_date) = ? AND MONTH(t.txn_date) = ?";
+    params.push(parseInt(year), parseInt(month));
+  }
+
+  sql += `
+    GROUP BY c.id
+    HAVING total > 0
+    ORDER BY total DESC
+  `;
+
+  const [rows] = await db.execute(sql, params);
+  return rows;
   },
 
   /** Top N transactions by amount */
