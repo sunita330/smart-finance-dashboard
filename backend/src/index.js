@@ -15,7 +15,10 @@ const PORT = process.env.PORT || 5000;
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin:[
+    "http://localhost:5173",
+    "https://smart-finance-dashboard-one.vercel.app",
+    "https://smart-finance-dashboard-rlj0mr4c4-sunita330s-projects.vercel.app"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Accept"],
   credentials: false,
