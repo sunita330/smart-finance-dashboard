@@ -7,7 +7,7 @@ CREATE DATABASE IF NOT EXISTS finance_dashboard
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE finance_dashboard;
+USE railway;
 
 -- ── Categories ────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS categories (
